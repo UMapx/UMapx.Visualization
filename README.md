@@ -162,4 +162,4 @@ its dependency in Release configuration.
 
 # License
 
-MIT.
+MIT
