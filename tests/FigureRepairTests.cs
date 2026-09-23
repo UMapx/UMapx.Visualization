@@ -4,7 +4,7 @@ using UMapx.Core;
 using UMapx.Visualization;
 using Xunit;
 
-namespace UMapx.Tests;
+namespace UMapx.Visualization.Tests;
 
 [Trait("Category", "Geometry")]
 [SupportedOSPlatform("windows")]
