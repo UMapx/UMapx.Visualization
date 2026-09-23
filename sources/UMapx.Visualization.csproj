@@ -13,7 +13,7 @@
     <Authors>Valery Asiryan</Authors>
     <Product>UMapx.Visualization</Product>
     <Copyright>Valery Asiryan, © 2015-2026</Copyright>
-    <Description>UMapx library for plotting data on Windows.</Description>
+    <Description>UMapx sub-library for plotting data on Windows.</Description>
     <PackageProjectUrl>https://github.com/UMapx/UMapx.Visualization</PackageProjectUrl>
     <RepositoryUrl>https://github.com/UMapx/UMapx.Visualization</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
