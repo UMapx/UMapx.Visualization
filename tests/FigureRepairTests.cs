@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Runtime.Versioning;
 using UMapx.Core;
-using UMapx.Visualization;
 using Xunit;
 
 namespace UMapx.Visualization.Tests;
