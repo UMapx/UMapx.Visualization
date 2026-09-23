@@ -6,11 +6,9 @@
     <Version>8.0.0.3</Version>
 	<AssemblyVersion>8.0.0.3</AssemblyVersion>
 	<FileVersion>8.0.0.3</FileVersion>
-    <AssemblyName>UMapx.Visualization</AssemblyName>
-    <RootNamespace>UMapx.Visualization</RootNamespace>
-    <PackageId>UMapx.Visualization</PackageId>
-    <Company>Valery Asiryan</Company>
-    <Authors>Valery Asiryan</Authors>
+	<PackageId>UMapx.Visualization</PackageId>
+	<Company>Valery Asiryan</Company>
+	<Authors>Valery Asiryan</Authors>
     <Product>UMapx.Visualization</Product>
     <Copyright>Valery Asiryan, © 2015-2026</Copyright>
     <Description>UMapx sub-library for plotting data on Windows.</Description>
