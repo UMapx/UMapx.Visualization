@@ -1,4 +1,4 @@
-<p align="center"><img width="25%" src="https://raw.githubusercontent.com/UMapx/UMapx.Visualization/main/docs/umapxnet_big.png" alt="UMapx" /></p>
+<p align="center"><img width="25%" src="https://raw.githubusercontent.com/UMapx/UMapx.Visualization/main/docs/umapxnet_big.png" /></p>
 <p align="center">UMapx sub-library for plotting data on Windows</p>
 
 # Installation
@@ -162,4 +162,4 @@ its dependency in Release configuration.
 
 # License
 
-[MIT](LICENSE).
+MIT.
