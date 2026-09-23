@@ -138,10 +138,6 @@ UMapx.Visualization/
   UMapx.Visualization.sln
 ```
 
-Use the split UMapx sources, version 8.0.0.3, which no longer contain the
-`UMapx.Visualization` types. Earlier monolithic UMapx packages define those types
-themselves and conflict with this separate library.
-
 Run from the `UMapx.Visualization` repository root on Windows:
 
 ```shell
