@@ -1,8 +1,28 @@
 # Scientific plots
 
-The scientific plotting API extends `Figure` with 3-D surfaces, scalar fields,
-and complex functions. It uses the existing Windows `System.Drawing` backend
-and renders through `To(Bitmap)` or `To(Graphics)`.
+The plotting API supports Cartesian series, images, 3-D surfaces, scalar fields,
+and complex functions. Every view shares one frame and layout system. It uses
+the existing Windows `System.Drawing` backend and renders through `To(Bitmap)`
+or `To(Graphics)`.
+
+## Common appearance
+
+Line, stem, scatter, image, heatmap, contour, and complex views use the same
+Cartesian axes, tick formatting, and grid. Surfaces share the typography, frame,
+grid style, and color scale, with their own projected 3-D axes. Line and scatter
+markers use the same drawing primitives as their legend symbols.
+
+`FigureStyle.Standard` and `new FigureStyle()` use Arial, a white frame and plot
+background, light grid lines, and one-pixel axis strokes. `FigureStyle.MATLAB`
+also uses a white frame. Other named themes retain their color schemes; presets
+that previously requested Trojan Pro now use Arial. Custom colors, fonts,
+line widths, grid options, and legend settings continue to apply.
+
+`Scaling` is the preferred fraction of the output available to the plot. The
+layout reserves extra space when tick labels, axis labels, title, or colorbar
+require it. Larger fonts and multiline titles therefore reduce the plot area
+instead of sharing the same fixed text offsets. Legends measure their text and
+clip/ellipsize content that cannot fit within the plotting area.
 
 ## Surface data
 
@@ -127,7 +147,7 @@ samples. Values outside finite float range become holes rather than overflowing
 the renderer. Phase fields use fixed limits [-pi, pi] and a cyclic palette.
 Use nearest sampling for phase fields to avoid interpolating across a phase wrap.
 
-For complex vectors, use the existing line-rendering path:
+For complex vectors, use Cartesian line series:
 
 ```csharp
 figure.PlotComplex(values, Color.RoyalBlue, label: "Trajectory");
@@ -135,23 +155,36 @@ figure.PlotComplex(t, values, ComplexComponent.Magnitude, Color.OrangeRed, label
 ```
 
 The first overload plots imaginary against real values. The second plots one
-component against an explicit real argument. They preserve the existing line
-styles, accumulation behavior, and axis behavior.
+component against an explicit real argument. Both use the shared Cartesian
+renderer and retain the existing accumulation and axis behavior.
 
 ## View selection and compatibility
 
 `Surface`, `Heatmap`, `Contour`, and `Complex` explicitly select their respective
-views. `Plot`, `PlotComplex`, and `Image` select the original 2-D view. Switching
+views. `Plot`, `PlotComplex`, and `Image` select the Cartesian 2-D view. Switching
 views retains the other data. `Heatmap`, `Contour`, and `Complex` replace their
 active field; `Surface` appends to the retained surface collection.
 
-`Clear()` removes all old and new data, selects the original 2-D view, and resets
+`Clear()` removes all data, selects the Cartesian 2-D view, and resets
 X/Y/Z ranges to [-5, 5]. As before, labels, style, and other settings are retained.
 Automatic ranges are calculated when rendering and are shared Figure state.
 
-Existing public signatures, enum values, default 2-D behavior, and zero-based
-implicit X coordinates are unchanged. New modes do not change the original
-2-D rendering implementation. No new package dependencies were added.
+Existing public signatures, enum values, series accumulation, zero-based implicit
+X coordinates, and range rules are unchanged. `Scatter` with `ShapeType.None`
+still connects points, and `Image()` still uses the image dimensions for axis
+ranges even when `AutoRange` is disabled. `EqualFieldAxes` continues to apply
+only to field views.
+
+The appearance of older 2-D plots is intentionally updated to the common
+scientific style. Image plots now show the grid over the image when `Grid.Show`
+is enabled. Previously generated images are not expected to be pixel-identical.
+No new package dependencies were added.
+
+The implementation separates public figure state, shared presentation, and data
+rendering: `Figure.Rendering.cs` provides the common pipeline; `FigureLayout`
+reserves space for decorations; `PlotRenderer`, `FieldRenderer`, and
+`SurfaceRenderer` draw their respective data. `Figure.Cartesian.cs` retains the
+Cartesian range rules and legend, while `Figure.Surface.cs` projects 3-D axes.
 
 ## Scope
 
@@ -173,6 +206,6 @@ From the repository root on Windows:
 dotnet run --project samples/ScientificFigures -c Release
 ```
 
-This creates Surface, Mesh, Heatmap/Contour, complex domain, complex surface,
-phase, and overview PNGs in `artifacts/scientific-figures/`. Pass an output
-directory after `--` to change that location.
+This creates line, stem, scatter, image, Surface, Mesh, Heatmap/Contour, complex
+domain, complex surface, phase, and overview PNGs in `artifacts/scientific-figures/`.
+Pass an output directory after `--` to change that location.

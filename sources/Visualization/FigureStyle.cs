@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 
 namespace UMapx.Visualization
@@ -11,8 +11,8 @@ namespace UMapx.Visualization
     {
         #region Private data
 
-        private Font _fontMarks = new Font("Trojan Pro", 10, FontStyle.Regular);
-        private Font _fontText = new Font("Trojan Pro", 12, FontStyle.Regular);
+        private Font _fontMarks = new Font("Arial", 10, FontStyle.Regular);
+        private Font _fontText = new Font("Arial", 12, FontStyle.Regular);
 
         #endregion
 
@@ -27,7 +27,7 @@ namespace UMapx.Visualization
         /// <summary>
         /// Gets or sets frame color.
         /// </summary>
-        public Color ColorFrame { get; set; } = Color.FromArgb(240, 240, 240);
+        public Color ColorFrame { get; set; } = Color.White;
         /// <summary>
         /// Gets or sets background color.
         /// </summary>
@@ -35,7 +35,7 @@ namespace UMapx.Visualization
         /// <summary>
         /// Gets or sets grid color.
         /// </summary>
-        public Color ColorGrid { get; set; } = Color.FromArgb(180, 180, 180);
+        public Color ColorGrid { get; set; } = Color.FromArgb(230, 230, 230);
         /// <summary>
         /// Gets or sets shapes color.
         /// </summary>
@@ -87,7 +87,7 @@ namespace UMapx.Visualization
         /// <summary>
         /// Gets or sets shapes depth.
         /// </summary>
-        public float DepthShapes { get; set; } = 2f;
+        public float DepthShapes { get; set; } = 1f;
         /// <summary>
         /// Gets or sets X grid.
         /// </summary>
@@ -142,7 +142,7 @@ namespace UMapx.Visualization
                 {
                     FontMarks = new Font("Helvetica", 10, FontStyle.Regular),
                     FontText = new Font("Helvetica", 12, FontStyle.Regular),
-                    ColorFrame = Color.FromArgb(204, 204, 204),
+                    ColorFrame = Color.White,
                     ColorBack = Color.White,
                     ColorGrid = Color.FromArgb(230, 230, 230),
                     ColorShapes = Color.Black,
@@ -226,26 +226,7 @@ namespace UMapx.Visualization
         /// <summary>
         /// Returns standard style.
         /// </summary>
-        public static FigureStyle Standard
-        {
-            get
-            {
-                return new FigureStyle
-                {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
-                    ColorFrame = Color.FromArgb(240, 240, 240),
-                    ColorBack = Color.White,
-                    ColorGrid = Color.FromArgb(180, 180, 180),
-                    ColorShapes = Color.Black,
-                    ColorText = Color.Black,
-                    ColorMarks = Color.Black,
-                    DepthShapes = 1.9f,
-                    GridX = true,
-                    GridY = true
-                };
-            }
-        }
+        public static FigureStyle Standard => new FigureStyle();
         /// <summary>
         /// Returns beige style.
         /// </summary>
@@ -255,8 +236,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.Beige,
                     ColorBack = Color.Bisque,
                     ColorGrid = Color.LightGray,
@@ -278,8 +259,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.Lavender,
                     ColorBack = Color.LightCyan,
                     ColorGrid = Color.LightGray,
@@ -301,8 +282,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.MistyRose,
                     ColorBack = Color.White,
                     ColorGrid = Color.LightGray,
@@ -324,8 +305,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.Coral,
                     ColorBack = Color.LightCoral,
                     ColorGrid = Color.LightGray,
@@ -347,8 +328,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.FromArgb(19, 19, 19),
                     ColorBack = Color.FromArgb(35, 35, 35),
                     ColorGrid = Color.FromArgb(75, 75, 70),
@@ -370,8 +351,8 @@ namespace UMapx.Visualization
             {
                 return new FigureStyle
                 {
-                    FontMarks = new Font("Trojan Pro", 10, FontStyle.Regular),
-                    FontText = new Font("Trojan Pro", 12, FontStyle.Regular),
+                    FontMarks = new Font("Arial", 10, FontStyle.Regular),
+                    FontText = new Font("Arial", 12, FontStyle.Regular),
                     ColorFrame = Color.White,
                     ColorBack = Color.White,
                     ColorGrid = Color.LightGray,

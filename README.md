@@ -135,13 +135,21 @@ figure.To(bitmap);
 bitmap.Save("complex.png", ImageFormat.Png);
 ```
 
-These are additive APIs. Existing `Plot`, `Image`, `Clear`, styles, enum values,
-and 2-D rendering behavior are preserved. The last plotting method selects the
+All plot types share one rendering frame: layout, titles, axes, grid, fonts,
+and styling follow the scientific plots. `FigureStyle.Standard` provides a white
+background, Arial typography, and a light grid; named themes and custom styles
+apply to every view. Labels reserve space automatically, including at large
+font sizes or `Scaling = 1`.
+
+Existing public signatures, enum values, series accumulation, zero-based X,
+image coordinates, and range rules are preserved. The visual appearance of the
+older 2-D plots is intentionally updated. The last plotting method selects the
 view; call `Clear()` to remove all retained data before starting a new scene.
 
 See [the scientific plotting guide](docs/scientific-plots.md) for matrix layout,
 color controls, complex surfaces, mode selection, and current limitations.
-The [runnable example](samples/ScientificFigures/Program.cs) generates six plots:
+The [runnable example](samples/ScientificFigures/Program.cs) generates ten plots,
+including lines, stems, scatter, and images alongside the scientific views:
 
 ```shell
 dotnet run --project samples/ScientificFigures -c Release
