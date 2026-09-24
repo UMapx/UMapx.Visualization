@@ -9,7 +9,7 @@ namespace UMapx.Visualization
     /// Defines the figure to plotting in a Cartesian coordinate system.
     /// </summary>
     [Serializable]
-    public class Figure
+    public partial class Figure
     {
         #region Private data
         private int _figure_width, _figure_height;
@@ -152,6 +152,11 @@ namespace UMapx.Visualization
         /// <param name="graphics">Graphics.</param>
         public void To(Graphics graphics)
         {
+            if (_scientificMode != ScientificMode.None)
+            {
+                RenderScientific(graphics);
+                return;
+            }
             #region Figure
 
             // figure and canvas sizes
@@ -355,6 +360,7 @@ namespace UMapx.Visualization
         /// <param name="bitmap">Bitmap.</param>
         public void Image(Bitmap bitmap)
         {
+            _scientificMode = ScientificMode.None;
             _imagePane = bitmap;
         }
         /// <summary>
@@ -367,6 +373,7 @@ namespace UMapx.Visualization
                 throw new ArgumentException("Vectors must be of the same length");
 
             _plotSeries.Add(plotSeries);
+            _scientificMode = ScientificMode.None;
         }
         /// <summary>
         /// Remove all plot series from the figure. 
@@ -377,6 +384,7 @@ namespace UMapx.Visualization
             _imagePane = null;
             _xmin = -5; _xmax = 5;
             _ymin = -5; _ymax = 5;
+            ClearScientific();
         }
         #endregion
 

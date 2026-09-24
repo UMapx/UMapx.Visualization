@@ -55,6 +55,9 @@ renders into an existing `System.Drawing.Graphics` surface.
 | `ShapeType` | Circle and rectangle markers, with outlined and filled variants |
 | `Grid`, `Legend` | Grid patterns, axis marks and legend position, spacing and appearance |
 | `Painter`, `PaintData` | Rectangles, titles, text labels and points drawn over images |
+| `SurfaceSeries`, `View3D` | Filled 3-D surfaces and wireframe meshes with a configurable camera |
+| `ComplexSeries`, `ComplexComponent` | Complex functions and real/imaginary/magnitude/phase fields |
+| `Colormap`, `Colorbar` | Color palettes and labeled color scales for scientific plots |
 
 Axis ranges and tick counts use `RangeFloat` and `PointInt` from `UMapx.Core`.
 
@@ -92,6 +95,57 @@ image, and resets both axis ranges to [-5, 5].
 
 Dispose `FigureStyle` after the last render, and dispose bitmaps and graphics
 objects when finished. A figure does not take ownership of these resources.
+
+# Scientific plots
+
+`Figure.Surface()` adds 3-D surfaces or meshes. `Figure.Heatmap()` and
+`Figure.Contour()` display scalar fields. `Figure.Complex()` shows complex
+functions using phase colors and magnitude brightness. `Figure.PlotComplex()`
+adds complex trajectories or signal components through the existing 2-D API.
+
+```csharp
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using UMapx.Core;
+using UMapx.Visualization;
+
+using var style = FigureStyle.MATLAB;
+var figure = new Figure(style)
+{
+    Title = "Surface", LabelX = "x", LabelY = "y", LabelZ = "z"
+};
+var range = new RangeFloat(-3, 3);
+var surface = SurfaceSeries.Sample(
+    (x, y) => (float)(Math.Sin(x) * Math.Cos(y)), range, range);
+surface.Style = SurfaceStyle.SurfaceWithMesh;
+figure.Surface(surface);
+figure.View3D.Azimuth = -37.5f;
+figure.View3D.Elevation = 30;
+using var bitmap = new Bitmap(800, 600);
+figure.To(bitmap);
+bitmap.Save("surface.png", ImageFormat.Png);
+
+var complex = ComplexSeries.Sample(z => z * z, range, range);
+figure.Clear();
+figure.Title = "f(z) = z²";
+figure.LabelX = "Re(z)"; figure.LabelY = "Im(z)";
+figure.Complex(complex);
+figure.To(bitmap);
+bitmap.Save("complex.png", ImageFormat.Png);
+```
+
+These are additive APIs. Existing `Plot`, `Image`, `Clear`, styles, enum values,
+and 2-D rendering behavior are preserved. The last plotting method selects the
+view; call `Clear()` to remove all retained data before starting a new scene.
+
+See [the scientific plotting guide](docs/scientific-plots.md) for matrix layout,
+color controls, complex surfaces, mode selection, and current limitations.
+The [runnable example](samples/ScientificFigures/Program.cs) generates six plots:
+
+```shell
+dotnet run --project samples/ScientificFigures -c Release
+```
 
 # Image annotations
 

@@ -1,0 +1,14 @@
+using System;
+
+namespace UMapx.Visualization
+{
+    /// <summary>Color scale displayed beside scientific plots. Does not affect legacy 2-D plots.</summary>
+    [Serializable]
+    public sealed class Colorbar
+    {
+        /// <summary>Whether to show the scale. With multiple surfaces it describes the last surface.</summary>
+        public bool Show { get; set; } = true;
+        /// <summary>Optional scale title.</summary>
+        public string Label { get; set; } = string.Empty;
+    }
+}
