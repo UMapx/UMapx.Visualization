@@ -3,19 +3,15 @@
 
 # Installation
 
-The current source tree uses a local [UMapx](https://github.com/UMapx/UMapx)
-project for shared types and mathematical operations. Place both repositories
-side by side as described in [Build and test](#build-and-test).
-
-Add a reference from your application to `sources/UMapx.Visualization.csproj`.
-For example, from an application directory beside `UMapx.Visualization`:
+Install **UMapx.Visualization** using [NuGet](https://www.nuget.org/packages/UMapx.Visualization/):
 
 ```shell
-dotnet add MyApp.csproj reference ../UMapx.Visualization/sources/UMapx.Visualization.csproj
+dotnet add package UMapx.Visualization
 ```
 
-Replace `MyApp.csproj` with your project name. The UMapx and System.Drawing.Common
-dependencies are included through the project reference.
+The package includes dependencies on UMapx and System.Drawing.Common, which
+NuGet restores automatically. The public API is in the `UMapx.Visualization`
+namespace.
 
 # Quick start
 
@@ -48,7 +44,7 @@ The examples use C# 9 or later and write images to the current working directory
 `Figure.To(bitmap)` renders into the supplied bitmap; `Figure.To(graphics)`
 renders into an existing `System.Drawing.Graphics` surface.
 
-# Visualization
+# Plotting and drawing
 
 | Component | Purpose |
 | --- | --- |
@@ -56,11 +52,11 @@ renders into an existing `System.Drawing.Graphics` surface.
 | `PlotSeries` | X and Y samples, line width, color, marker shape and legend label |
 | `SeriesType` | Line plots (`Plot`), stem plots (`Stem`) and scatter plots (`Scatter`) |
 | `FigureStyle` | Colors, fonts and line widths, with presets such as `Standard`, `MATLAB`, `MathCad`, `Excel` and `Black` |
+| `ShapeType` | Circle and rectangle markers, with outlined and filled variants |
 | `Grid`, `Legend` | Grid patterns, axis marks and legend position, spacing and appearance |
 | `Painter`, `PaintData` | Rectangles, titles, text labels and points drawn over images |
 
-The public API is in the `UMapx.Visualization` namespace. Axis ranges and tick
-counts use `RangeFloat` and `PointInt` from `UMapx.Core`.
+Axis ranges and tick counts use `RangeFloat` and `PointInt` from `UMapx.Core`.
 
 # Platform support
 
@@ -68,9 +64,7 @@ The library targets **.NET Standard 2.0** and builds as **AnyCPU**. Drawing uses
 [System.Drawing.Common](https://learn.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/7.0/system-drawing)
 and requires **Windows**. Linux and macOS are not supported by this rendering backend.
 
-The regression suite has been run on Windows with .NET 8 in an x64 process.
-Building and running the tests requires the .NET 8 SDK, or a newer SDK with
-the .NET 8 runtime installed.
+Regression tests cover Windows with .NET 8 in an x64 process.
 
 # Working with figures
 
@@ -83,8 +77,13 @@ The figure retains the supplied series and arrays; it does not copy their data.
 rendered, using the finite values across all series. Constant values receive
 a margin so that single points and constant signals can be displayed.
 To set fixed bounds, disable `AutoRange` and assign `RangeX` and `RangeY` using
-`RangeFloat`. Set `Marks` with `PointInt` to choose the number of intervals on
-each axis. The grid is hidden by default; enable it with `Grid.Show`.
+`RangeFloat`.
+
+Set `Marks` with `PointInt` to choose the number of intervals on each axis.
+Enable the grid with `Grid.Show` and choose solid, dashed or dotted lines with
+`Grid.Style`. The legend is visible by default; use `Legend.Show` to hide it
+or `Legend.Anchor` to change its corner. Each series supplies its legend text
+through `PlotSeries.Label`.
 
 `Figure.Image(bitmap)` displays a bitmap inside the plotting area and sets the
 axes to its dimensions, even when `AutoRange` is disabled. It retains the bitmap;
@@ -127,34 +126,25 @@ graphics surface.
 
 # Build and test
 
-Keep the repositories in this layout:
-
-```text
-UMapx/
-  sources/UMapx.csproj
-UMapx.Visualization/
-  sources/UMapx.Visualization.csproj
-  tests/UMapx.Visualization.Tests.csproj
-  UMapx.Visualization.sln
-```
-
-Run from the `UMapx.Visualization` repository root on Windows:
+Run from the repository root on Windows with the .NET 8 SDK, or a newer SDK
+with the .NET 8 runtime installed:
 
 ```shell
 dotnet build UMapx.Visualization.sln -c Release
-dotnet test tests/UMapx.Visualization.Tests.csproj -c Release --no-build --no-restore
+dotnet test UMapx.Visualization.sln -c Release --no-build --no-restore
 ```
 
-The tests cover automatic ranges for constant and single-point series, combined
+The solution contains the library and its tests. Dependencies are restored from
+NuGet during the build. `build.bat` builds the library in Release configuration.
+
+Tests cover automatic ranges for constant and single-point series, combined
 bounds across multiple series, manual ranges, and empty or nonfinite data.
 They are also discoverable in Visual Studio.
 
-The library and XML API documentation are written to
-`sources/bin/Release/netstandard2.0/`. The build also creates a
-`UMapx.Visualization.*.nupkg` package in `sources/bin/Release/`. To install it from
-a local NuGet feed, include the matching `UMapx.*.nupkg` built in
-`../UMapx/sources/bin/Release/` in that feed. `build.bat` builds the library and
-its dependency in Release configuration.
+Build outputs:
+
+- Library and XML API documentation: `sources/bin/Release/netstandard2.0/`.
+- NuGet package: `sources/bin/Release/UMapx.Visualization.*.nupkg`.
 
 # License
 
