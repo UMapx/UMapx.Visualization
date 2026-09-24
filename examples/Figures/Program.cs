@@ -3,7 +3,7 @@ using System.Drawing.Imaging;
 using UMapx.Core;
 using UMapx.Visualization;
 
-var output = Path.GetFullPath(args.Length == 0 ? "artifacts/scientific-figures" : args[0]);
+var output = Path.GetFullPath(args.Length == 0 ? "artifacts/figures" : args[0]);
 Directory.CreateDirectory(output);
 using var style = FigureStyle.Standard;
 var range = new RangeFloat(-3, 3);

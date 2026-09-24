@@ -2,7 +2,7 @@ using System;
 
 namespace UMapx.Visualization
 {
-    /// <summary>Color scale displayed beside scientific plots. Does not affect legacy 2-D plots.</summary>
+    /// <summary>Color scale for surfaces, heatmaps, contours, and complex domain coloring.</summary>
     [Serializable]
     public sealed class Colorbar
     {

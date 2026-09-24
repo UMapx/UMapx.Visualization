@@ -27,7 +27,7 @@ namespace UMapx.Visualization
         }
         /// <summary>Gets or sets the camera used for surface plots.</summary>
         [field: OptionalField] public View3D View3D { get; set; } = new View3D();
-        /// <summary>Gets or sets the color scale for scientific plots. Null hides the scale.</summary>
+        /// <summary>Gets or sets the color scale for surfaces and fields. Null hides the scale.</summary>
         [field: OptionalField] public Colorbar Colorbar { get; set; } = new Colorbar();
         /// <summary>Use equal horizontal and vertical data units in field, contour, and complex views.
         /// Does not change the aspect ratio of Plot or Image.</summary>
