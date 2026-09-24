@@ -1,11 +1,5 @@
 <p align="center"><img width="25%" src="https://raw.githubusercontent.com/UMapx/UMapx.Visualization/main/docs/umapxnet_big.png" /></p>
-<p align="center">UMapx library for plotting data and annotating images on Windows</p>
-
-Contents: [Quick start](#quick-start) · [Working with figures](#working-with-figures) ·
-[Lines, stems and scatter](#lines-stems-and-scatter-plots) · [Images](#images) ·
-[Surfaces, heatmaps and contours](#surfaces-heatmaps-and-contours) ·
-[Complex functions](#complex-functions) · [Annotations](#image-annotations) ·
-[Examples](#examples) · [Limitations](#limitations) · [Build and test](#build-and-test)
+<p align="center">UMapx sub-library for plotting data and annotating images on Windows</p>
 
 # Installation
 
