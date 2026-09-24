@@ -94,6 +94,11 @@ namespace UMapx.Visualization
             float tickWidth = 0;
             for (int i = 0; i <= count; i++)
                 tickWidth = Math.Max(tickWidth, graphics.MeasureString(Tick(surface ? RangeZ : RangeY, i, count), _style.FontMarks).Width);
+            float horizontalTickPadding = 0;
+            if (!surface)
+                for (int i = 0; i <= Marks.X; i++)
+                    horizontalTickPadding = Math.Max(horizontalTickPadding,
+                        graphics.MeasureString(Tick(RangeX, i, Marks.X), _style.FontMarks).Width / 2 + 8);
             float markHeight = _style.FontMarks.GetHeight(graphics);
             float textHeight = _style.FontText.GetHeight(graphics);
             float titleHeight = string.IsNullOrEmpty(Title) ? 0 : graphics.MeasureString(Title, _style.FontText, Math.Max(1, width - 16)).Height;
@@ -105,7 +110,7 @@ namespace UMapx.Visualization
                 colorWidth = Math.Max(colorWidth + 66, graphics.MeasureString(colorScale.Label, _style.FontMarks).Width + 28);
             }
             bool equal = !surface && _scientificMode != ScientificMode.None && EqualFieldAxes;
-            return FigureLayout.Create(width, height, Scaling, tickWidth, markHeight, textHeight, titleHeight,
+            return FigureLayout.Create(width, height, Scaling, tickWidth, horizontalTickPadding, markHeight, textHeight, titleHeight,
                 !string.IsNullOrEmpty(LabelX), !string.IsNullOrEmpty(surface ? LabelZ : LabelY), colorWidth,
                 equal ? ((double)RangeX.Max - RangeX.Min) / ((double)RangeY.Max - RangeY.Min) : (double?)null);
         }

@@ -135,6 +135,28 @@ public class UnifiedRenderingTests
     }
 
     [Fact]
+    public void LargeTickLabelsHaveRoomAtTheTopAndRightEdges()
+    {
+        using var style = FigureStyle.Standard;
+        style.FontMarks = new Font("Arial", 36);
+        style.ColorMarks = Color.Red;
+        var figure = CreateFigure(style);
+        figure.Scaling = 1;
+        figure.Title = figure.LabelX = figure.LabelY = "";
+        figure.RangeX = new RangeFloat(-1000000, 1000000);
+        figure.Marks = new PointInt(2, 2);
+        figure.Grid.Show = figure.Grid.Shapes = false;
+        using var image = Render(figure);
+        Assert.True(Count(image, IsRed) > 100);
+        for (int y = 0; y < image.Height; y++)
+            for (int x = image.Width - 3; x < image.Width; x++)
+                Assert.False(IsRed(image.GetPixel(x, y)), "Rightmost tick label is clipped.");
+        for (int y = 0; y < 3; y++)
+            for (int x = 0; x < image.Width; x++)
+                Assert.False(IsRed(image.GetPixel(x, y)), "Top tick label is clipped.");
+    }
+
+    [Fact]
     public void HighScalingAndLargeTextKeepSharedLayoutUsable()
     {
         using var style = FigureStyle.Standard;

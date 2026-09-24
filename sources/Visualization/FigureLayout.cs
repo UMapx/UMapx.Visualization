@@ -9,16 +9,17 @@ namespace UMapx.Visualization
         internal RectangleF PlotBounds, TitleBounds, ColorbarBounds;
         internal float XLabelY, YLabelX;
 
-        internal static FigureLayout Create(int width, int height, float scaling, float tickWidth,
+        internal static FigureLayout Create(int width, int height, float scaling, float tickWidth, float horizontalTickPadding,
             float markHeight, float textHeight, float titleHeight, bool labelX, bool labelY,
             float colorWidth, double? dataAspect)
         {
             float horizontalMargin = width * (1 - scaling) / 2;
             float verticalMargin = height * (1 - scaling) / 2;
             float left = Math.Max(horizontalMargin, tickWidth + 14 + (labelY ? textHeight + 8 : 0));
-            float top = Math.Max(verticalMargin, titleHeight + 16);
+            left = Math.Max(left, horizontalTickPadding);
+            float top = Math.Max(verticalMargin, Math.Max(titleHeight + 16, markHeight / 2 + 8));
             float bottom = Math.Max(verticalMargin, markHeight + 14 + (labelX ? textHeight + 8 : 0));
-            float right = Math.Max(horizontalMargin, 16);
+            float right = Math.Max(horizontalMargin, Math.Max(16, horizontalTickPadding));
             if (colorWidth > 0) right = Math.Max(right + Math.Min(60, width * 0.12f), colorWidth);
 
             // Even very small targets keep a nonempty content rectangle.
