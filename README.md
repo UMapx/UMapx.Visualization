@@ -1,5 +1,5 @@
 <p align="center"><img width="25%" src="https://raw.githubusercontent.com/UMapx/UMapx.Visualization/main/docs/umapxnet_big.png" /></p>
-<p align="center">UMapx sub-library for plotting data on Windows</p>
+<p align="center">UMapx sub-library for plotting data and annotating images on Windows</p>
 
 # Installation
 
@@ -9,9 +9,8 @@ Install **UMapx.Visualization** using [NuGet](https://www.nuget.org/packages/UMa
 dotnet add package UMapx.Visualization
 ```
 
-The package includes dependencies on UMapx and System.Drawing.Common, which
-NuGet restores automatically. The public API is in the `UMapx.Visualization`
-namespace.
+NuGet restores the **UMapx** and **System.Drawing.Common** dependencies
+automatically. The public API is in the `UMapx.Visualization` namespace.
 
 # Quick start
 
@@ -40,111 +39,84 @@ figure.To(bitmap);
 bitmap.Save("plot.png", ImageFormat.Png);
 ```
 
-The examples use C# 9 or later and write images to the current working directory.
-`Figure.To(bitmap)` renders into the supplied bitmap; `Figure.To(graphics)`
-renders into an existing `System.Drawing.Graphics` surface.
+This example uses C# 9 or later and writes `plot.png` to the current working
+directory. `Figure.To()` renders into a supplied `Bitmap` or `Graphics` surface.
 
 # Plotting and drawing
 
-| Component | Purpose |
+| Area | API |
 | --- | --- |
-| `Figure` | Cartesian plots with titles, axis labels, automatic or manual ranges, and bitmap display |
-| `PlotSeries` | X and Y samples, line width, color, marker shape and legend label |
-| `SeriesType` | Line plots (`Plot`), stem plots (`Stem`) and scatter plots (`Scatter`) |
-| `FigureStyle` | Colors, fonts and line widths, with presets such as `Standard`, `MATLAB`, `MathCad`, `Excel` and `Black` |
-| `ShapeType` | Circle and rectangle markers, with outlined and filled variants |
-| `Grid`, `Legend` | Grid patterns, axis marks and legend position, spacing and appearance |
-| `Painter`, `PaintData` | Rectangles, titles, text labels and points drawn over images |
+| Lines, stems and scatter plots | `PlotSeries`, `SeriesType`, `ShapeType`, `Figure.Plot()` |
+| Images | `Figure.Image()` |
+| Surfaces and wireframe meshes | `SurfaceSeries`, `SurfaceStyle`, `View3D`, `Figure.Surface()` |
+| Heatmaps and contours | `Figure.Heatmap()`, `Figure.Contour()` |
+| Complex functions and trajectories | `ComplexSeries`, `ComplexComponent`, `Figure.Complex()`, `Figure.PlotComplex()` |
+| Appearance and axes | `FigureStyle`, `Grid`, `Legend`, `Colormap`, `Colorbar` |
+| Image annotations | `Painter`, `PaintData` |
 
-Axis ranges and tick counts use `RangeFloat` and `PointInt` from `UMapx.Core`.
+All plots share the same styling system. `FigureStyle` includes `Standard`,
+`MATLAB`, `MathCad`, `Excel` and other presets. Axis ranges and tick counts use
+`RangeFloat` and `PointInt` from `UMapx.Core`.
 
 # Platform support
 
-The library targets **.NET Standard 2.0** and builds as **AnyCPU**. Drawing uses
-[System.Drawing.Common](https://learn.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/7.0/system-drawing)
-and requires **Windows**. Linux and macOS are not supported by this rendering backend.
+The library targets **.NET Standard 2.0** and builds as **AnyCPU**. Rendering
+requires Windows because it uses `System.Drawing.Common`; Linux and macOS
+are not supported. Output is bitmap-based, with orthographic rendering for 3-D
+surfaces.
 
-Regression tests cover Windows with .NET 8 in an x64 process.
+Regression tests cover Windows with .NET 8 in an x64 process. Building and
+running the tests and examples requires the .NET 8 SDK, or a newer SDK with
+the .NET 8 runtime installed.
 
 # Working with figures
 
-`PlotSeries` accepts `float[]` arrays. X and Y must have equal lengths. The
-constructor that takes only Y values generates X coordinates starting at zero.
-Call `Figure.Plot()` for each series to display several series on the same axes.
-The figure retains the supplied series and arrays; it does not copy their data.
+Repeated `Plot()` or `Surface()` calls add series or surfaces. The last plotting
+method selects the displayed view; switching views retains the other data.
+`Clear()` removes all data and resets X/Y/Z ranges to [-5, 5], retaining labels
+and settings.
 
-`AutoRange` is enabled by default. Ranges are calculated when the figure is
-rendered, using the finite values across all series. Constant values receive
-a margin so that single points and constant signals can be displayed.
-To set fixed bounds, disable `AutoRange` and assign `RangeX` and `RangeY` using
-`RangeFloat`.
+`AutoRange` follows finite data bounds when rendering and adds a margin for
+constant values. Set it to false to use `RangeX`, `RangeY` and `RangeZ`.
+`Image()` always sets X/Y ranges to the image dimensions.
 
-Set `Marks` with `PointInt` to choose the number of intervals on each axis.
-Enable the grid with `Grid.Show` and choose solid, dashed or dotted lines with
-`Grid.Style`. The legend is visible by default; use `Legend.Show` to hide it
-or `Legend.Anchor` to change its corner. Each series supplies its legend text
-through `PlotSeries.Label`.
+`PlotSeries` accepts equally sized X/Y arrays; the Y-only constructor generates
+zero-based X coordinates. `SurfaceSeries` uses `float[y, x]` matrices on finite,
+strictly increasing coordinate axes with at least two samples each.
+`ComplexSeries` uses `Complex32[imaginary, real]` values. Both grid types provide
+`Sample()` helpers for evaluating functions.
 
-`Figure.Image(bitmap)` displays a bitmap inside the plotting area and sets the
-axes to its dimensions, even when `AutoRange` is disabled. It retains the bitmap;
-keep it alive until rendering is complete. `Clear()` removes all series and the
-image, and resets both axis ranges to [-5, 5].
+Series retain their input arrays. Complex `ToField()` and `ToSurface()`
+conversions copy a snapshot. Update retained data or settings and call `To()`
+again to redraw. Dispose styles, bitmaps and graphics when finished; `Figure`
+does not own these resources. `Painter` owns its pens and font.
 
-Dispose `FigureStyle` after the last render, and dispose bitmaps and graphics
-objects when finished. A figure does not take ownership of these resources.
+# Examples
 
-# Image annotations
+The [plotting example](examples/Program.cs) demonstrates all plot types
+and generates PNG images with a combined overview. Run from the repository root:
 
-Draw a labeled rectangle and points on a blank image:
-
-```csharp
-using System.Drawing;
-using System.Drawing.Imaging;
-using UMapx.Visualization;
-
-using var bitmap = new Bitmap(640, 360);
-using (var graphics = Graphics.FromImage(bitmap))
-using (var painter = new Painter { InsideBox = true, Transparency = 40 })
-{
-    graphics.Clear(Color.White);
-    painter.Draw(graphics, new PaintData
-    {
-        Title = "Object",
-        Rectangle = new Rectangle(120, 80, 320, 220),
-        Labels = new[] { "Confidence: 0.98" },
-        Points = new[] { new Point(220, 180), new Point(340, 180) }
-    });
-}
-bitmap.Save("annotations.png", ImageFormat.Png);
+```shell
+dotnet run --project examples/UMapx.Visualization.Example.csproj -c Release
 ```
 
-To annotate an existing image, load it with `new Bitmap("input.jpg")` and omit
-`graphics.Clear()`. `Painter.Draw()` draws directly onto the supplied graphics
-surface and accepts multiple `PaintData` objects in one call. `Painter` owns its
-pens and font and disposes them with the painter; the caller owns the image and
-graphics surface.
+Output is written to `figures/` in the current working directory; pass a directory
+after `--` to change it. The [example solution](examples/UMapx.Visualization.Example.sln)
+opens in Visual Studio.
 
 # Build and test
 
-Run from the repository root on Windows with the .NET 8 SDK, or a newer SDK
-with the .NET 8 runtime installed:
+Run from the repository root on Windows:
 
 ```shell
 dotnet build UMapx.Visualization.sln -c Release
 dotnet test UMapx.Visualization.sln -c Release --no-build --no-restore
 ```
 
-The solution contains the library and its tests. Dependencies are restored from
-NuGet during the build. `build.bat` builds the library in Release configuration.
-
-Tests cover automatic ranges for constant and single-point series, combined
-bounds across multiple series, manual ranges, and empty or nonfinite data.
-They are also discoverable in Visual Studio.
-
-Build outputs:
-
-- Library and XML API documentation: `sources/bin/Release/netstandard2.0/`.
-- NuGet package: `sources/bin/Release/UMapx.Visualization.*.nupkg`.
+The solution contains the library and its tests. Tests cover ranges, shared
+rendering, surface depth and clipping, fields, complex data and view selection.
+The library and XML API documentation are written to
+`sources/bin/Release/netstandard2.0/`; the NuGet package is in `sources/bin/Release/`.
 
 # License
 
