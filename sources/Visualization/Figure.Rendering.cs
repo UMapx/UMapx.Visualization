@@ -37,7 +37,7 @@ namespace UMapx.Visualization
 
             if (surface)
             {
-                var projection = new SurfaceRenderer.Projection(bounds, View3D);
+                var projection = new SurfaceProjection(bounds, View3D);
                 DrawSurfaceAxes(graphics, projection);
                 var renderer = new SurfaceRenderer(width, height, projection, RangeX, RangeY, RangeZ);
                 using var image = renderer.Render(_surfaces);
@@ -202,13 +202,6 @@ namespace UMapx.Visualization
             if (value == 0) return "0";
             float magnitude = Math.Abs(value);
             return magnitude >= 1e4f || magnitude < 1e-3f ? value.ToString("0.##E+0") : value.ToString("0.###");
-        }
-
-        private sealed class ColorScale
-        {
-            internal Colormap Map;
-            internal RangeFloat Range;
-            internal string Label;
         }
 
         private ColorScale GetColorScale()

@@ -6,7 +6,7 @@ namespace UMapx.Visualization
 {
     public partial class Figure
     {
-        private void DrawSurfaceAxes(Graphics g, SurfaceRenderer.Projection projection)
+        private void DrawSurfaceAxes(Graphics g, SurfaceProjection projection)
         {
             using var pen = new Pen(_style.ColorShapes, _style.DepthShapes);
             using var grid = CreateGridPen();
@@ -32,7 +32,7 @@ namespace UMapx.Visualization
             for (int x = -1; x <= 1; x += 2)
                 for (int y = -1; y <= 1; y += 2)
                 {
-                    var p = projection.Project(new SurfaceRenderer.Vertex { X = x, Y = y, Z = -1 });
+                    var p = projection.Project(new SurfaceVertex { X = x, Y = y, Z = -1 });
                     if (p.Z > near) { near = p.Z; fx = x; fy = y; }
                     if (p.X < left) { left = p.X; zx = x; zy = y; }
                 }

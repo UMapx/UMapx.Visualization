@@ -10,72 +10,13 @@ namespace UMapx.Visualization
     // Rasterizes opaque surfaces with a shared depth buffer, including intersections.
     internal sealed class SurfaceRenderer
     {
-        internal struct Vertex
-        {
-            internal double X, Y, Z, R, G, B;
-            internal bool Valid;
-            internal static Vertex Lerp(Vertex a, Vertex b, double t) => new Vertex
-            {
-                X = a.X + (b.X - a.X) * t, Y = a.Y + (b.Y - a.Y) * t,
-                Z = a.Z + (b.Z - a.Z) * t, R = a.R + (b.R - a.R) * t,
-                G = a.G + (b.G - a.G) * t, B = a.B + (b.B - a.B) * t, Valid = true
-            };
-        }
-
-        internal sealed class Projection
-        {
-            private readonly double ca, sa, ce, se, height, scale, centerX, centerY, midU, midV;
-            internal Projection(RectangleF bounds, View3D view)
-            {
-                double a = (view.Azimuth % 360) * Math.PI / 180, e = view.Elevation * Math.PI / 180;
-                ca = Math.Cos(a); sa = Math.Sin(a); ce = Math.Cos(e); se = Math.Sin(e);
-                height = view.HeightRatio;
-                double uMin = double.PositiveInfinity, uMax = double.NegativeInfinity;
-                double vMin = double.PositiveInfinity, vMax = double.NegativeInfinity;
-                for (int x = -1; x <= 1; x += 2)
-                    for (int y = -1; y <= 1; y += 2)
-                        for (int z = -1; z <= 1; z += 2)
-                        {
-                            var p = Rotate(new Vertex { X = x, Y = y, Z = z });
-                            uMin = Math.Min(uMin, p.X); uMax = Math.Max(uMax, p.X);
-                            vMin = Math.Min(vMin, p.Y); vMax = Math.Max(vMax, p.Y);
-                        }
-                scale = Math.Min(bounds.Width / (uMax - uMin), bounds.Height / (vMax - vMin));
-                centerX = bounds.Left + bounds.Width / 2; centerY = bounds.Top + bounds.Height / 2;
-                midU = (uMin + uMax) / 2; midV = (vMin + vMax) / 2;
-            }
-
-            private Vertex Rotate(Vertex v)
-            {
-                double t = sa * v.X + ca * v.Y, z = v.Z * height;
-                v.X = ca * v.X - sa * v.Y;
-                v.Y = -se * t + ce * z;
-                v.Z = ce * t + se * z;
-                return v;
-            }
-
-            internal Vertex Project(Vertex v)
-            {
-                v = Rotate(v);
-                v.X = centerX + (v.X - midU) * scale;
-                v.Y = centerY - (v.Y - midV) * scale;
-                return v;
-            }
-
-            internal PointF Point(double x, double y, double z)
-            {
-                var p = Project(new Vertex { X = x, Y = y, Z = z });
-                return new PointF((float)p.X, (float)p.Y);
-            }
-        }
-
         private readonly int width, height;
         private readonly double[] depth;
         private readonly int[] pixels;
-        private readonly Projection projection;
+        private readonly SurfaceProjection projection;
         private readonly RangeFloat rangeX, rangeY, rangeZ;
 
-        internal SurfaceRenderer(int width, int height, Projection projection,
+        internal SurfaceRenderer(int width, int height, SurfaceProjection projection,
             RangeFloat rangeX, RangeFloat rangeY, RangeFloat rangeZ)
         {
             this.width = width; this.height = height; this.projection = projection;
@@ -110,12 +51,12 @@ namespace UMapx.Visualization
             catch { result.Dispose(); throw; }
         }
 
-        private Vertex MakeVertex(SurfaceSeries surface, int row, int col, RangeFloat colors)
+        private SurfaceVertex MakeVertex(SurfaceSeries surface, int row, int col, RangeFloat colors)
         {
             double z = surface.Z[row, col], c = (surface.ColorValues ?? surface.Z)[row, col];
             if (!ScientificData.Finite(z) || !ScientificData.Finite(c)) return default;
             var color = surface.Colormap.GetColor(ScientificData.Normalize(c, colors));
-            return new Vertex
+            return new SurfaceVertex
             {
                 X = 2 * ScientificData.Normalize(surface.X[col], rangeX) - 1,
                 Y = 2 * ScientificData.Normalize(surface.Y[row], rangeY) - 1,
@@ -138,7 +79,7 @@ namespace UMapx.Visualization
                 }
         }
 
-        private void DrawTriangle(Vertex a, Vertex b, Vertex c, SurfaceSeries surface)
+        private void DrawTriangle(SurfaceVertex a, SurfaceVertex b, SurfaceVertex c, SurfaceSeries surface)
         {
             if (!a.Valid || !b.Valid || !c.Valid) return;
             if (!surface.InterpolateColors)
@@ -155,7 +96,7 @@ namespace UMapx.Visualization
                 if (n > 0) light = 0.35 + 0.65 * Math.Abs((0.3 * nx - 0.4 * ny + 0.8660254 * nz) / n);
             }
             // Clip geometry, not sample coordinates, to preserve intersections at manual limits.
-            var polygon = new List<Vertex> { a, b, c };
+            var polygon = new List<SurfaceVertex> { a, b, c };
             for (int axis = 0; axis < 3 && polygon.Count > 0; axis++)
                 for (int side = -1; side <= 1 && polygon.Count > 0; side += 2)
                     polygon = Clip(polygon, axis, side);
@@ -166,23 +107,23 @@ namespace UMapx.Visualization
                     light, surface.Style == SurfaceStyle.Mesh);
         }
 
-        private static double Coordinate(Vertex v, int axis) => axis == 0 ? v.X : axis == 1 ? v.Y : v.Z;
+        private static double Coordinate(SurfaceVertex v, int axis) => axis == 0 ? v.X : axis == 1 ? v.Y : v.Z;
 
-        private static List<Vertex> Clip(List<Vertex> input, int axis, int side)
+        private static List<SurfaceVertex> Clip(List<SurfaceVertex> input, int axis, int side)
         {
-            var output = new List<Vertex>(input.Count + 1);
+            var output = new List<SurfaceVertex>(input.Count + 1);
             var a = input[input.Count - 1]; double da = 1 - side * Coordinate(a, axis);
             foreach (var b in input)
             {
                 double db = 1 - side * Coordinate(b, axis);
-                if ((da >= 0) != (db >= 0)) output.Add(Vertex.Lerp(a, b, da / (da - db)));
+                if ((da >= 0) != (db >= 0)) output.Add(SurfaceVertex.Lerp(a, b, da / (da - db)));
                 if (db >= 0) output.Add(b);
                 a = b; da = db;
             }
             return output;
         }
 
-        private void RasterTriangle(Vertex a, Vertex b, Vertex c, double light, bool mesh)
+        private void RasterTriangle(SurfaceVertex a, SurfaceVertex b, SurfaceVertex c, double light, bool mesh)
         {
             double den = (b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y);
             if (Math.Abs(den) < 1e-12) return;
@@ -223,7 +164,7 @@ namespace UMapx.Visualization
                 }
         }
 
-        private void DrawEdge(Vertex a, Vertex b, SurfaceSeries surface)
+        private void DrawEdge(SurfaceVertex a, SurfaceVertex b, SurfaceSeries surface)
         {
             if (!a.Valid || !b.Valid) return;
             for (int axis = 0; axis < 3; axis++)
@@ -231,8 +172,8 @@ namespace UMapx.Visualization
                 {
                     double da = 1 - side * Coordinate(a, axis), db = 1 - side * Coordinate(b, axis);
                     if (da < 0 && db < 0) return;
-                    if (da < 0) a = Vertex.Lerp(a, b, da / (da - db));
-                    else if (db < 0) b = Vertex.Lerp(a, b, da / (da - db));
+                    if (da < 0) a = SurfaceVertex.Lerp(a, b, da / (da - db));
+                    else if (db < 0) b = SurfaceVertex.Lerp(a, b, da / (da - db));
                 }
             a = projection.Project(a); b = projection.Project(b);
             int steps = Math.Max(1, (int)Math.Ceiling(Math.Max(Math.Abs(b.X - a.X), Math.Abs(b.Y - a.Y))));
@@ -240,7 +181,7 @@ namespace UMapx.Visualization
             double bias = 0.002 + Math.Abs(b.Z - a.Z) / steps * (radius + 1);
             for (int i = 0; i <= steps; i++)
             {
-                var p = Vertex.Lerp(a, b, (double)i / steps);
+                var p = SurfaceVertex.Lerp(a, b, (double)i / steps);
                 int cx = (int)Math.Floor(p.X), cy = (int)Math.Floor(p.Y);
                 for (int y = cy - radius; y <= cy + radius; y++)
                     for (int x = cx - radius; x <= cx + radius; x++)
