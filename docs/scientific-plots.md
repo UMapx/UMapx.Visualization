@@ -203,7 +203,7 @@ claiming pixel-for-pixel MATLAB rendering.
 From the repository root on Windows:
 
 ```shell
-dotnet run --project samples/ScientificFigures -c Release
+dotnet run --project examples/ScientificFigures -c Release
 ```
 
 This creates line, stem, scatter, image, Surface, Mesh, Heatmap/Contour, complex

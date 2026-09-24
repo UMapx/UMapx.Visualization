@@ -148,11 +148,11 @@ view; call `Clear()` to remove all retained data before starting a new scene.
 
 See [the scientific plotting guide](docs/scientific-plots.md) for matrix layout,
 color controls, complex surfaces, mode selection, and current limitations.
-The [runnable example](samples/ScientificFigures/Program.cs) generates ten plots,
+The [runnable example](examples/ScientificFigures/Program.cs) generates ten plots,
 including lines, stems, scatter, and images alongside the scientific views:
 
 ```shell
-dotnet run --project samples/ScientificFigures -c Release
+dotnet run --project examples/ScientificFigures -c Release
 ```
 
 # Image annotations
