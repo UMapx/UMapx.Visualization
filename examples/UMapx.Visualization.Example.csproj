@@ -5,6 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sources\UMapx.Visualization.csproj" />
+    <ProjectReference Include="..\sources\UMapx.Visualization.csproj" />
   </ItemGroup>
 </Project>
