@@ -201,7 +201,7 @@ public class ScientificFigureTests
     }
 
     [Fact]
-    public void ClearAndLegacyPlotRestoreTheOriginalRenderingPath()
+    public void ClearAndPlotRestoreTheCartesianView()
     {
         using var style = FigureStyle.Standard;
         var figure = new Figure(style);
@@ -214,8 +214,8 @@ public class ScientificFigureTests
         figure.Surface(new SurfaceSeries(new float[2, 2]));
         var plot = new PlotSeries(new[] { 1f, 3, 2 }, 2, Color.Red, SeriesType.Plot, ShapeType.Circle, "line");
         figure.Plot(plot);
-        var legacy = new Figure(style); legacy.Plot(plot);
-        using var actual = Render(figure); using var reference = Render(legacy);
+        var cartesian = new Figure(style); cartesian.Plot(plot);
+        using var actual = Render(figure); using var reference = Render(cartesian);
         Assert.Equal(Pixels(reference), Pixels(actual));
     }
 
